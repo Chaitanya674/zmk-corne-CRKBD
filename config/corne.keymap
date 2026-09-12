@@ -15,11 +15,6 @@
 
                 default_layer {
                         display-name = "Default Layer";
-// -----------------------------------------------------------------------------------------
-// |  TAB |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  | BSPC |
-// |  ESC |  A  |  S  |  D  |  F  |  G  |   |  H  |  J   |  K  |  L  |  ;  |  '   |
-// | SHFT |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M   |  ,  |  .  |  /  | WIN  |
-//                    | LCTRL | LWR | SPC |   | ENT | RSE  | ALT |
                         bindings = 
    &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
    &kp ESC   &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
@@ -29,11 +24,6 @@
                 };
                 lower_layer {
                         display-name = "Lower Layer";
-// -----------------------------------------------------------------------------------------
-// | CAPS |  1  |  UP |  3  |  4  |  5  |   |  1  |  2  |  3  |  0  |  )  | BSPC |
-// |  DEL | LEFT|DOWN |RIGHT| BT4 | BT5 |   |  4  |  5  |  6  |  ~  |  \  |      |
-// | SHFT |     |     |     |vol- |vol+ |   |  7  |  8  |  9  |  `  | "|" |  WIN |
-//                    | LCTRL |     | SPC |   | ENT |     | ALT |
                         bindings = 
    &kp CAPS &kp N1   &kp UP   &kp N3   &kp N4       &kp N5         &kp N1   &kp N2   &kp N3 &kp N0   &kp RPAR &kp BSPC
    &kp DEL  &kp LEFT &kp DOWN &kp RIGHT &bt BT_SEL 3 &bt BT_SEL 4   &kp N4   &kp N5   &kp N6 &kp TILDE &kp BSLH &trans
@@ -44,11 +34,6 @@
 
                 raise_layer {
                         display-name = "Raise Layer";
-// -----------------------------------------------------------------------------------------
-// |  TAB |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  | BSPC |
-// | CTRL |  F1 |  F2 |  F3 |  F4 |  F5 |   |  -  |  =  |     |  [  |  ]  |  `   |
-// | SHFT |  F6 |  F7 |  F8 |  F9 | F11 |   | BRI+|BRI- |     |  {  |  }  |  ~   |
-//                    | LCTRL |     | SPC |   | ENT |     | ALT |
                         bindings = 
    &kp  TAB  &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT   &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC
    &kp LCTRL &kp F1   &kp F2 &kp F3   &kp F4   &kp F5      &kp MINUS &kp EQUAL &trans    &kp LBKT &kp RBKT &kp GRAVE
@@ -59,11 +44,6 @@
 
                 rgb_layer {
                         display-name = "RGB Layer";
-// -----------------------------------------------------------------------------------------
-// |      |     |     |     |     |     |   |     |     |     |     |     |      |
-// | TOG  |HUE- |HUE+ |SAT- |SAT+ |BRI- |   |BRI+ |EFF- |EFF+ |SPD- |SPD+ |      |
-// |      |     |     |     |     |     |   |     |     |     |     |     |      |
-//                    |     |     |     |   |     |     |     |
                         bindings = 
    &trans          &trans          &trans          &trans          &trans          &trans            &trans          &trans          &trans          &trans          &trans          &trans
    &rgb_ug RGB_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_BRD   &rgb_ug RGB_BRI &rgb_ug RGB_EFR &rgb_ug RGB_EFF &rgb_ug RGB_SPD &rgb_ug RGB_SPI &trans
