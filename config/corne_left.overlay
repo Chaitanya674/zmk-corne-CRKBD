@@ -1,38 +1,36 @@
 /*
- * LEFT HALF — 1.3" OLED
+ * LEFT HALF — 0.91" 128x32 SSD1306
  *
- * A 1.3" I2C OLED module is almost always an SH1106 controller at 128x64.
- * ZMK's stock corne.dtsi declares a 128x32 SSD1306, so the SSD1306 driver
- * was talking to an SH1106: the SH1106 ignores SSD1306's horizontal
- * addressing command, so the framebuffer never lands where the driver
- * thinks it does, and `inversion-on` turns every untouched pixel ON.
- * That is your solid blue panel.
+ * Both your panels are the same physical module (confirmed from photos:
+ * identical narrow strip shape, identical GND/VCC/SCK/SDA pinout). The
+ * "1.3" and "1.6" markings on the backs are PCB batch/revision numbers,
+ * not screen sizes — there is no 128x64 panel on this board. The previous
+ * version of this file wrongly declared this half as a 1.3" SH1106 at
+ * 128x64. Feeding an SH1106 init sequence to an actual SSD1306 controller
+ * means it never receives a command it understands, so the panel never
+ * initializes — which reads as a totally dark screen. That is almost
+ * certainly why the left half went from "wrong colors" to "nothing".
  *
- * IF YOUR 1.3" PANEL IS ACTUALLY ON THE RIGHT HALF, swap the contents of
- * this file and corne_right.overlay.
+ * This file is now identical to corne_right.overlay. Stock geometry,
+ * only polarity changed.
  */
 
 &oled {
-    compatible = "sinowealth,sh1106";
+    compatible = "solomon,ssd1306fb";
     reg = <0x3c>;
     width = <128>;
-    height = <64>;
-
-    /* SH1106 has 132 columns of RAM driving a 128-column panel, so the
-     * visible area starts 2 columns in. Leaving this at 0 shifts the image
-     * sideways and wraps the edge. */
-    segment-offset = <2>;
-
+    height = <32>;
+    segment-offset = <0>;
     page-offset = <0>;
     display-offset = <0>;
-    multiplex-ratio = <63>;
+    multiplex-ratio = <31>;
     segment-remap;
     com-invdir;
+    com-sequential;
     prechargep = <0x22>;
 
-    /* 64-row panels use alternating COM pins, not sequential. */
-    /delete-property/ com-sequential;
-
-    /* Normal polarity: 0 = dark, 1 = lit. */
+    /* Normal polarity: 0 = dark, 1 = lit. If the image still comes out
+     * as a lit background with a dark shape, delete the line below and
+     * write `inversion-on;` instead. */
     /delete-property/ inversion-on;
 };
