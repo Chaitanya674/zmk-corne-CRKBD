@@ -8,6 +8,7 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/ext_power.h>
 
 / {
         keymap {
@@ -47,7 +48,9 @@
                 rgb_layer {
                         display-name = "RGB Layer";
                         bindings = <
-   &trans          &trans          &trans          &trans          &trans          &trans            &trans          &trans          &trans          &trans          &trans          &trans
+// Top row: external power rail control. The Corne OLED is powered from this
+// rail, so if a screen goes dark, EP_ON here brings it back without a reflash.
+   &ext_power EP_ON &ext_power EP_OFF &ext_power EP_TOG &trans     &trans          &trans            &trans          &trans          &trans          &trans          &trans          &trans
    &rgb_ug RGB_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_BRD   &rgb_ug RGB_BRI &rgb_ug RGB_EFR &rgb_ug RGB_EFF &rgb_ug RGB_SPD &rgb_ug RGB_SPI &trans
    &trans          &trans          &trans          &trans          &trans          &trans            &trans          &trans          &trans          &trans          &trans          &trans
                                     &trans          &trans          &trans            &trans          &trans          &trans

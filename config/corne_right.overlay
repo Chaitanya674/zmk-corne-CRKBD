@@ -1,0 +1,9 @@
+/*
+ * Right half (peripheral). Same panel override as the left.
+ *
+ * The OLED node itself lives in ZMK's shared corne.dtsi, so the right half
+ * already has a display defined. If the right screen is blank, the cause is
+ * almost never devicetree - see README.md, "Right half is blank".
+ */
+
+#include "oled.dtsi"

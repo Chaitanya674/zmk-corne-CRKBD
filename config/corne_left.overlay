@@ -1,0 +1,7 @@
+/*
+ * Left half (central). Pulls in the shared panel override.
+ * Keep this file and corne_right.overlay identical so both OLEDs are
+ * driven with exactly the same parameters.
+ */
+
+#include "oled.dtsi"
