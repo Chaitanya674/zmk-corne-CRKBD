@@ -14,7 +14,7 @@ static void set_battery_text(uint8_t level) {
     if (battery_label == NULL) {
         return;
     }
-    char text[6];
+    char text[8];
     snprintf(text, sizeof(text), "%d%%", level);
     lv_label_set_text(battery_label, text);
 }
@@ -28,40 +28,63 @@ ZMK_LISTENER(status_screen_battery, battery_listener_cb);
 ZMK_SUBSCRIPTION(status_screen_battery, zmk_battery_state_changed);
 
 static void draw_face(lv_obj_t *parent) {
+    // Face outline
     lv_obj_t *face = lv_obj_create(parent);
     lv_obj_set_size(face, 28, 28);
     lv_obj_set_style_radius(face, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_opa(face, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(face, 2, 0);
     lv_obj_set_style_border_color(face, lv_color_white(), 0);
-    lv_obj_align(face, LV_ALIGN_LEFT_MID, 2, 0);
+    lv_obj_align(face, LV_ALIGN_LEFT_MID, 4, 0);
 
+    // Left eye
     lv_obj_t *eye_l = lv_obj_create(face);
     lv_obj_set_size(eye_l, 6, 8);
     lv_obj_set_style_radius(eye_l, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(eye_l, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(eye_l, LV_OPA_COVER, 0);
     lv_obj_align(eye_l, LV_ALIGN_LEFT_MID, 4, -2);
 
+    // Right eye
     lv_obj_t *eye_r = lv_obj_create(face);
     lv_obj_set_size(eye_r, 6, 8);
     lv_obj_set_style_radius(eye_r, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(eye_r, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(eye_r, LV_OPA_COVER, 0);
     lv_obj_align(eye_r, LV_ALIGN_RIGHT_MID, -4, -2);
 
+    // Blush mark
     lv_obj_t *blush = lv_obj_create(face);
     lv_obj_set_size(blush, 4, 2);
     lv_obj_set_style_radius(blush, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(blush, lv_color_white(), 0);
     lv_obj_set_style_bg_opa(blush, LV_OPA_50, 0);
-    lv_obj_align(blush, LV_ALIGN_LEFT_MID, 2, 6);
+    lv_obj_align(blush, LV_ALIGN_LEFT_MID, 2, 8);
 }
 
 lv_obj_t *zmk_display_status_screen() {
     lv_obj_t *screen = lv_obj_create(NULL);
+
+    // Force a solid black background so unused pixels stay off (real OLED look)
+    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_width(screen, 0, 0);
+    lv_obj_set_style_pad_all(screen, 0, 0);
+
     draw_face(screen);
 
+    // Thin vertical separator between face and battery, for a cleaner split layout
+    lv_obj_t *divider = lv_obj_create(screen);
+    lv_obj_set_size(divider, 1, 24);
+    lv_obj_set_style_bg_color(divider, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(divider, LV_OPA_50, 0);
+    lv_obj_set_style_border_width(divider, 0, 0);
+    lv_obj_align(divider, LV_ALIGN_CENTER, 10, 0);
+
+    // Battery label, right-aligned
     battery_label = lv_label_create(screen);
-    lv_obj_align(battery_label, LV_ALIGN_RIGHT_MID, -4, 0);
+    lv_obj_set_style_text_color(battery_label, lv_color_white(), 0);
+    lv_obj_align(battery_label, LV_ALIGN_RIGHT_MID, -6, 0);
     set_battery_text(zmk_battery_state_of_charge());
 
     return screen;
