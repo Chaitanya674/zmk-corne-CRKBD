@@ -1,9 +1,28 @@
 /*
- * Right half (peripheral). Same panel override as the left.
+ * RIGHT HALF — 0.91" 128x32 SSD1306
  *
- * The OLED node itself lives in ZMK's shared corne.dtsi, so the right half
- * already has a display defined. If the right screen is blank, the cause is
- * almost never devicetree - see README.md, "Right half is blank".
+ * This matches ZMK's stock geometry, so the only change needed is polarity.
+ *
+ * IF YOUR 0.91" PANEL IS ACTUALLY ON THE LEFT HALF, swap the contents of
+ * this file and corne_left.overlay.
  */
 
-#include "oled.dtsi"
+&oled {
+    compatible = "solomon,ssd1306fb";
+    reg = <0x3c>;
+    width = <128>;
+    height = <32>;
+    segment-offset = <0>;
+    page-offset = <0>;
+    display-offset = <0>;
+    multiplex-ratio = <31>;
+    segment-remap;
+    com-invdir;
+    com-sequential;
+    prechargep = <0x22>;
+
+    /* Normal polarity: 0 = dark, 1 = lit. If the image comes out as a lit
+     * background with a dark trooper, delete the line below and write
+     * `inversion-on;` instead. */
+    /delete-property/ inversion-on;
+};
