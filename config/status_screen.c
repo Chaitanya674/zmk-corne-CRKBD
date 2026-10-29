@@ -5,13 +5,8 @@
  * OLEDs (128x32 and 128x64), so the layout is measured from the actual
  * display resolution at runtime rather than hard-coded.
  *
- * Polarity convention on a monochrome OLED:
- *   lv_color_black() -> pixel OFF -> dark
- *   lv_color_white() -> pixel ON  -> blue
- * If this renders inverted, fix `inversion-on` in the .overlay, not here.
- *
- * LVGL 8.x API (current ZMK). On LVGL 9, rename lv_obj_clear_flag to
- * lv_obj_remove_flag; nothing else changes.
+ * LVGL 9 (current ZMK main). The v8 names used here (lv_obj_clear_flag,
+ * lv_disp_get_*_res) still compile through LVGL's v8 compatibility map.
  */
 
 #include <zephyr/kernel.h>
@@ -27,6 +22,21 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/battery_state_changed.h>
 
 /* ------------------------------------------------------------------ *
+ * Pixel polarity — counter-intuitive, so always use these two macros.
+ *
+ * LVGL's 1-bit renderer stores bright colors (white) as 1, and Zephyr's
+ * mono flush turns a 1 into an UNLIT pixel. The SSD1306 driver pairs
+ * `inversion-on` with a matching pixel format, so this holds with or
+ * without that property. ZMK's own mono theme relies on the same mapping
+ * (white background = dark panel, black text = lit text).
+ *
+ * Filling the screen with lv_color_black() is what produced the solid blue
+ * panel.
+ * ------------------------------------------------------------------ */
+#define PX_ON lv_color_black()  /* lit (blue)  */
+#define PX_OFF lv_color_white() /* dark        */
+
+/* ------------------------------------------------------------------ *
  * DIAGNOSTIC SWITCH
  *
  * Set this to 1 to draw a 1px lit border around the exact edge of the
@@ -35,7 +45,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
  * glass:
  *
  *   clean rectangle touching all four edges  -> geometry is correct
- *   rectangle floating in a lit field        -> polarity still inverted
+ *   rectangle floating in a lit field        -> swap PX_ON / PX_OFF above
  *   rectangle cut off or wrapped at an edge  -> wrong width/segment-offset
  *   rectangle only fills part of the height  -> wrong height/multiplex-ratio
  *   nothing at all                           -> panel is not being driven
@@ -78,7 +88,7 @@ static lv_obj_t *new_shape(lv_obj_t *parent, lv_coord_t w, lv_coord_t h, bool fi
     lv_obj_set_size(o, w, h);
 
     if (filled) {
-        lv_obj_set_style_bg_color(o, lv_color_white(), 0);
+        lv_obj_set_style_bg_color(o, PX_ON, 0);
         lv_obj_set_style_bg_opa(o, LV_OPA_COVER, 0);
     } else {
         lv_obj_set_style_bg_opa(o, LV_OPA_TRANSP, 0);
@@ -95,10 +105,10 @@ static void draw_trooper(lv_obj_t *parent, int s) {
     const lv_coord_t h = 30 * s;
 
     lv_obj_t *helmet = new_shape(parent, w, h, false);
-    lv_obj_set_style_bg_color(helmet, lv_color_black(), 0);
+    lv_obj_set_style_bg_color(helmet, PX_OFF, 0);
     lv_obj_set_style_bg_opa(helmet, LV_OPA_COVER, 0);
     lv_obj_set_style_border_width(helmet, 2, 0);
-    lv_obj_set_style_border_color(helmet, lv_color_white(), 0);
+    lv_obj_set_style_border_color(helmet, PX_ON, 0);
     lv_obj_set_style_border_opa(helmet, LV_OPA_COVER, 0);
     lv_obj_set_style_radius(helmet, 9 * s, 0);
     lv_obj_align(helmet, LV_ALIGN_LEFT_MID, 3, 0);
@@ -161,9 +171,9 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     lv_obj_remove_style_all(screen);
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    lv_obj_set_style_bg_color(screen, PX_OFF, 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
-    lv_obj_set_style_text_color(screen, lv_color_white(), 0);
+    lv_obj_set_style_text_color(screen, PX_ON, 0);
 
     /* Measure the panel instead of assuming it. This is what lets one
      * source file serve both the 128x32 and the 128x64 half. */
@@ -174,7 +184,7 @@ lv_obj_t *zmk_display_status_screen(void) {
 #if STATUS_SCREEN_DEBUG_FRAME
     lv_obj_t *frame = new_shape(screen, hor, ver, false);
     lv_obj_set_style_border_width(frame, 1, 0);
-    lv_obj_set_style_border_color(frame, lv_color_white(), 0);
+    lv_obj_set_style_border_color(frame, PX_ON, 0);
     lv_obj_set_style_border_opa(frame, LV_OPA_COVER, 0);
     lv_obj_align(frame, LV_ALIGN_TOP_LEFT, 0, 0);
 
@@ -184,7 +194,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_align(tick, LV_ALIGN_TOP_LEFT, 2, 2);
 
     lv_obj_t *dbg = lv_label_create(screen);
-    lv_obj_set_style_text_color(dbg, lv_color_white(), 0);
+    lv_obj_set_style_text_color(dbg, PX_ON, 0);
     static char dbg_text[24];
     snprintf(dbg_text, sizeof(dbg_text), SIDE_LABEL " %dx%d", (int)hor, (int)ver);
     lv_label_set_text(dbg, dbg_text);
@@ -203,13 +213,13 @@ lv_obj_t *zmk_display_status_screen(void) {
     /* L / R marker. Doubles as a diagnostic: if the right panel ever lights
      * up showing "L", you flashed the left-half firmware onto it. */
     lv_obj_t *side = lv_label_create(screen);
-    lv_obj_set_style_text_color(side, lv_color_white(), 0);
+    lv_obj_set_style_text_color(side, PX_ON, 0);
     lv_label_set_text(side, SIDE_LABEL);
     lv_obj_align(side, LV_ALIGN_LEFT_MID, split_x + 8, (scale == 2) ? -12 : 0);
 
     /* Battery percentage */
     battery_label = lv_label_create(screen);
-    lv_obj_set_style_text_color(battery_label, lv_color_white(), 0);
+    lv_obj_set_style_text_color(battery_label, PX_ON, 0);
     lv_obj_align(battery_label, LV_ALIGN_RIGHT_MID, -4, (scale == 2) ? 12 : 0);
     set_battery_text(zmk_battery_state_of_charge());
 
