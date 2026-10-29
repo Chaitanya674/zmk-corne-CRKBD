@@ -42,7 +42,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
  *
  * Set back to 0 once the geometry is confirmed.
  * ------------------------------------------------------------------ */
-#define STATUS_SCREEN_DEBUG_FRAME 1
+#define STATUS_SCREEN_DEBUG_FRAME 0
 
 /* ------------------------------------------------------------------ *
  * Which half am I?
